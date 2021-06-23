@@ -5,19 +5,28 @@ from tqdm import tqdm
 import argparse
 import numpy as np
 import cv2
-from scipy.misc import imread
+#from scipy.misc import imread
+from imageio import imread
+import skimage.io as io
 
+#sauvola binarizer:
+# import cv2
+# import numpy as np
+from skimage import img_as_float, img_as_ubyte
+from skimage.filters import threshold_sauvola
+from skimage.color import rgb2gray
 
 
 # ---------------------------
 # ----- SET YOUR PATH!! -----
 # ---------------------------
-DATA_ROOT = './dataset'
-SAVE_DIR = './'
+DATA_ROOT = 'C:/Users/prikha/Downloads/BA/Datasets/HTSNet_Syn_method/'
+SAVE_DIR = 'C:/Users/prikha/Downloads/BA/Datasets/HTSNet_Syn_method/'
 
-NUM_SENTENCE = 100
+NUM_SENTENCE = 100  #296, 139
 SCALES = [0.7, 1., 1.5]
-PATCH_SIZE=128
+#SCALES = [0.7, 1., 1.5, 2.0, 2.3]
+PATCH_SIZE=256
 STRIDE_SCALE = 1.5
 
 
@@ -36,8 +45,8 @@ for key, value in argd.items():
     print('\t%15s:\t%s' % (key, value))
 
 
-scribs = glob.glob(os.path.join(args.data_root,'IAM/*/*/*.png'))
-docs = glob.glob(os.path.join(args.data_root,'Documents/*/*.png'))
+scribs = glob.glob(os.path.join(args.data_root,'bin_h/*.jpg'))
+docs = glob.glob(os.path.join(args.data_root,'bin_m/*.jpg'))
 
 for cate in ['syn','label']:
     path_ = os.path.join(args.save_dir,cate)
@@ -51,14 +60,15 @@ def otsu_b(img, kernel=3):
     return otsu_image
 
 
-def make_sentence_paper(sentence_files, target_shape, max_rot = 20):
+def make_sentence_paper(sentence_files, target_shape, max_rot = 0):
+    global hand
     max_rotate = max_rot
     default_image = np.zeros(target_shape)
     for x in sentence_files:
-        st = imread(x, mode='L')
+        st = imread(x, pilmode='L')
         inverse_st = 255. - st
-        y_t = np.random.random_integers(np.int32(target_shape[1]) * -0.3, np.int32(target_shape[1]) * 0.5)
-        x_t = np.random.random_integers(np.int32(target_shape[0]) * 0.005, np.int32(target_shape[0]) * 0.95)
+        y_t = np.random.randint(np.int32(target_shape[1]) * -0.3, np.int32(target_shape[1]) * 0.5)
+        x_t = np.random.randint(np.int32(target_shape[0]) * 0.005, np.int32(target_shape[0]) * 0.95)
         T = np.float32([[1, 0, y_t],
                         [0, 1, x_t]])
         translated_inverse_st = cv2.warpAffine(inverse_st, T, (target_shape[1], target_shape[0]))
@@ -69,7 +79,7 @@ def make_sentence_paper(sentence_files, target_shape, max_rot = 20):
         default_image += img_w
 
         hand = np.uint8(np.clip(255 - default_image, 0, 255))
-        if np.count_nonzero(otsu_b(255-hand))/(target_shape[0]*target_shape[1]) > 0.1:
+        if np.count_nonzero(255 - hand)/(target_shape[0]*target_shape[1]) > 0.1:
             break
 
     return hand
@@ -78,8 +88,8 @@ def make_sentence_paper(sentence_files, target_shape, max_rot = 20):
 
 def make_images(doc, scrib_files, inter=True):
     hand = make_sentence_paper(scrib_files, doc.shape)
-    m_label = 255. - otsu_b(doc)
-    h_label = 255. - otsu_b(hand)
+    m_label = 255. - hand
+    h_label = 255. - doc
 
     # h = (255.+np.random.randn()*30- hand) * (h_label / 255.)
     # h= np.clip(h, 0,255)
@@ -101,8 +111,8 @@ def make_images(doc, scrib_files, inter=True):
 
 
 def synthesis_patch(input_patch, hand_patch, label_patch):
-    machine = input_patch
-    hand= hand_patch
+    machine = hand_patch
+    hand= input_patch
     hand_label = label_patch[:,:,2]
 
     masked_hand = np.clip((255. + np.random.randn()*15 - hand) * (hand_label/255.),0,255)
@@ -124,7 +134,7 @@ saved_img = 0
 for idx, doc in tqdm(enumerate(docs)):
     for ii, scale in enumerate(SCALES):
         real_num = NUM_SENTENCE
-        document = cv2.resize(imread(doc, mode='L'), None, fx=scale , fy=scale, interpolation=cv2.INTER_NEAREST)
+        document = cv2.resize(imread(doc, pilmode='L'), None, fx=scale , fy=scale, interpolation=cv2.INTER_NEAREST)
         st_file = np.random.choice(scribs, np.int32(real_num))
 
 
