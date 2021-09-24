@@ -9,13 +9,6 @@ import cv2
 from imageio import imread
 import skimage.io as io
 
-#sauvola binarizer:
-# import cv2
-# import numpy as np
-from skimage import img_as_float, img_as_ubyte
-from skimage.filters import threshold_sauvola
-from skimage.color import rgb2gray
-
 
 # ---------------------------
 # ----- SET YOUR PATH!! -----
@@ -23,10 +16,10 @@ from skimage.color import rgb2gray
 DATA_ROOT = 'C:/Users/prikha/Downloads/BA/Datasets/HTSNet_Syn_method/'
 SAVE_DIR = 'C:/Users/prikha/Downloads/BA/Datasets/HTSNet_Syn_method/'
 
-NUM_SENTENCE = 100  #296, 139
-SCALES = [0.7, 1., 1.5]
-#SCALES = [0.7, 1., 1.5, 2.0, 2.3]
-PATCH_SIZE=256
+NUM_SENTENCE = 100
+SCALES = [0.7, 1., 1.5]  # use for wgm
+#SCALES = [0.7, 1., 1.5, 2., 2.3, 2.7, 3.5]  # use for cvl and jottueset
+PATCH_SIZE = 256
 STRIDE_SCALE = 1.5
 
 
@@ -45,8 +38,8 @@ for key, value in argd.items():
     print('\t%15s:\t%s' % (key, value))
 
 
-scribs = glob.glob(os.path.join(args.data_root,'bin_h/*.jpg'))
-docs = glob.glob(os.path.join(args.data_root,'bin_m/*.jpg'))
+scribs = glob.glob(os.path.join(args.data_root, 'bin_h/*.jpg'))
+docs = glob.glob(os.path.join(args.data_root, 'bin_m/*.jpg'))
 
 for cate in ['syn','label']:
     path_ = os.path.join(args.save_dir,cate)
@@ -60,7 +53,7 @@ def otsu_b(img, kernel=3):
     return otsu_image
 
 
-def make_sentence_paper(sentence_files, target_shape, max_rot = 0):
+def make_sentence_paper(sentence_files, target_shape, max_rot=0):  # no rotation applied
     global hand
     max_rotate = max_rot
     default_image = np.zeros(target_shape)
@@ -88,6 +81,8 @@ def make_sentence_paper(sentence_files, target_shape, max_rot = 0):
 
 def make_images(doc, scrib_files, inter=True):
     hand = make_sentence_paper(scrib_files, doc.shape)
+
+    # Since green denotes hw and red denoted printed parts, switch the labels:
     m_label = 255. - hand
     h_label = 255. - doc
 
