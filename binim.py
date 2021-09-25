@@ -13,11 +13,6 @@ def binim(img):
     Takes an image file as input and returns a binarized image.
     :type img: input image file
     """
-    height, width, channels = img.shape
-
-    # Create blank Binary Image
-    img_binary = np.zeros((height, width, 1))
-
     # Create grayscale image
     img_grayscale = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
