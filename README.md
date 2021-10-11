@@ -54,4 +54,10 @@ Running the above command will generate the scribbled document patches in ```${Y
 ![typical_example](https://user-images.githubusercontent.com/38808157/91790749-7b635b00-ec4c-11ea-91ec-f442ca9cec34.png)
 The first row shows synthesized patches and the second row indicates corresponding pixel-level annotations. Blue, Red and Green denote background, handwritten-text and machine-printed text pixels, respectively. Yellow are overalapping areas.
 
+## Source files used in the bachelor theisis
 
+All requirements can be found in the file `requirements.txt`.
+
+The synthesis method is defined in the file `data_generation.py`. 
+
+The file `binim.py` contains the code which was used to binarize color images of _wgm_ dataset.	
