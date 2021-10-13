@@ -27,37 +27,22 @@ each other, while we are focusing on more challenging and realistic cases where 
 
 
 ### Prepare datasets
-Please download the dataset directly from their website and follow their license agreement.
-- [IAM Handwriting Database](http://www.fki.inf.unibe.ch/databases/iam-handwriting-database)
-- [PRImA Layout Anlysis Dataset](https://www.primaresearch.org/datasets)
-- [Scanned Questionnaire Documents](https://drive.google.com/file/d/1Q4kDiJts-yi9IhsYT6ku5Y4WNhwagnPJ/view?usp=sharing)
 
-The structure of the data directory should look like following scripts. If you want to rearrange the structure, you need to edit the file ```data_generation.py``` to reflect the path that you used to store the data.
-
-```
-${YOUR_DATA_ROOT}
-|-- IAM
-
-|-- Documents
-    |-- PRImA
-        |-- *.png        
-    |-- Questionnaire
-        |-- *.png   
-```
+For data synthesis, machine-printed and handwritten crops with their pixel-wise annotations are required.
 
 ### Run synthesis code
 
 ```
-python data_generation.py --data_root ${YOUR_DATA_ROOT} --save_dir ${YOUR_SAVE_DIR} --patch_size 128
+python data_generation.py --data_root ${YOUR_DATA_ROOT} --save_dir ${YOUR_SAVE_DIR} --patch_size 256
 ```
 Running the above command will generate the scribbled document patches in ```${YOUR_SAVE_DIR}``` as shown in following figures:
 ![typical_example](https://user-images.githubusercontent.com/38808157/91790749-7b635b00-ec4c-11ea-91ec-f442ca9cec34.png)
-The first row shows synthesized patches and the second row indicates corresponding pixel-level annotations. Blue, Red and Green denote background, handwritten-text and machine-printed text pixels, respectively. Yellow are overalapping areas.
+The first row shows synthesized patches and the second row indicates corresponding pixel-level annotations. Blue, Red and Green denote background, machine-printed and handwritten text pixels, respectively. Yellow are overalapping areas.
 
-## Source files used in the bachelor theisis
+## Files used in the bachelor theisis
 
 All requirements can be found in the file `requirements.txt`.
 
-The synthesis method is defined in the file `data_generation.py`. 
+The file `binim.py` contains the code which was used to binarize color images of _wgm_ dataset.
 
-The file `binim.py` contains the code which was used to binarize color images of _wgm_ dataset.	
+The synthesis method is defined in the file `data_generation.py`. 
