@@ -28,7 +28,7 @@ each other, while we are focusing on more challenging and realistic cases where 
 
 ### Prepare datasets
 
-For data synthesis, machine-printed and handwritten crops with their pixel-wise annotations are required, whereas red denotes printed components and green denotes handwritten components.
+For data synthesis, machine-printed and handwritten crops with their pixel-wise annotations are required.
 
 ### Run synthesis code
 
